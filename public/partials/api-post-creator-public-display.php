@@ -17,7 +17,7 @@
 <?php
     $options = get_option('api-post-creator');
     if($options['post-title']){
-        echo('<h4>' . $args['posts-title'] . "hahahah" . '</h4>');
+        echo('<h4>' . $args['posts-title'] . "test 1 - posts title" . '</h4>');
     }
 ?>
 
