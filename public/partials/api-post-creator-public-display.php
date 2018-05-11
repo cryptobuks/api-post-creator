@@ -14,3 +14,15 @@
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
+<?php
+    $options = get_option('api-post-creator');
+    if($options['post-title']){
+        echo('<h4>' . $args['posts-title'] . "hahahah" . '</h4>');
+    }
+?>
+
+<ul>
+    <?php foreach ( $items as $item ){ ?>
+        <li><b><?php echo ($item->post_title) ?></b> - <?php echo ($item->post_content) ?> </li>
+    <?php } ?>
+</ul>

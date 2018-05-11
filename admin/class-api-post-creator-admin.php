@@ -98,6 +98,103 @@ class Api_Post_Creator_Admin {
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/api-post-creator-admin.js', array( 'jquery' ), $this->version, false );
 
+	} // enqueue_scripts()
+
+	/**
+	 * Creates a new custom post type
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @uses register_post_type()
+	 */
+	public static function new_cpt_api_post() {
+		$cap_type = 'post';
+		$plural = 'API posts';
+		$single = 'API post';
+		$cpt_name = 'api-post';
+		$opts['can_export'] = TRUE;
+		$opts['capability_type'] = $cap_type;
+		$opts['description'] = '';
+		$opts['exclude_from_search'] = FALSE;
+		$opts['has_archive'] = TRUE;
+		$opts['hierarchical'] = FALSE;
+		$opts['map_meta_cap'] = TRUE;
+		$opts['menu_icon'] = 'dashicons-format-audio';
+		$opts['menu_position'] = 25;
+		$opts['public'] = TRUE;
+		$opts['publicly_querable'] = TRUE;
+		$opts['query_var'] = TRUE;
+		$opts['register_meta_box_cb'] = '';
+		$opts['rewrite'] = FALSE;
+		$opts['show_in_admin_bar'] = TRUE;
+		$opts['show_in_menu'] = TRUE;
+		$opts['show_in_nav_menu'] = TRUE;
+
+		$opts['supports'] = array('title', 'thumbnail', 'custom-fields');
+		
+		$opts['labels']['add_new'] = esc_html__( "Add New {$single}", 'api post' );
+		$opts['labels']['add_new_item'] = esc_html__( "Add New {$single}", 'api post' );
+		$opts['labels']['all_items'] = esc_html__( $plural, 'api post' );
+		$opts['labels']['edit_item'] = esc_html__( "Edit {$single}" , 'api post' );
+		$opts['labels']['menu_name'] = esc_html__( $plural, 'api post' );
+		$opts['labels']['name'] = esc_html__( $plural, 'api post' );
+		$opts['labels']['name_admin_bar'] = esc_html__( $single, 'api post' );
+		$opts['labels']['new_item'] = esc_html__( "New {$single}", 'api post' );
+		$opts['labels']['not_found'] = esc_html__( "No {$plural} Found", 'api post' );
+		$opts['labels']['not_found_in_trash'] = esc_html__( "No {$plural} Found in Trash", 'api post' );
+		$opts['labels']['parent_item_colon'] = esc_html__( "Parent {$plural} :", 'api post' );
+		$opts['labels']['search_items'] = esc_html__( "Search {$plural}", 'api post' );
+		$opts['labels']['singular_name'] = esc_html__( $single, 'api post' );
+		$opts['labels']['view_item'] = esc_html__( "View {$single}", 'api post' );
+		register_post_type( strtolower( $cpt_name ), $opts );
+	} // new_cpt_api_post()
+	
+	/**
+	* Register the administration menu for this plugin into the WordPress Dashboard menu.
+	*
+	* @since 1.0.0
+	*/
+	
+	public function add_plugin_admin_menu() {
+		add_options_page( 'API Posts Creator Options Settings', 'API posts', 'manage_options', $this->plugin_name, array($this, 'display_plugin_setup_page'));
+	}
+	
+
+	/**
+	* Add settings action link to the plugins page.
+	*
+	* @since 1.0.0
+	*/
+	
+	public function add_action_links( $links ) {
+		$settings_link = array(
+			'<a href="' . admin_url( 'options-general.php?page=' . $this->plugin_name ) . '">' . __('Settings', $this->plugin_name) . '</a>',
+		);
+		return array_merge( $settings_link, $links );
 	}
 
+	/**
+	* Render the settings page for this plugin.
+	*
+	* @since 1.0.0
+	*/
+	
+	public function display_plugin_setup_page() {
+		include_once( 'partials/api-post-creator-admin-display.php' );
+	}
+
+	// form validation
+	public function validate($input) {
+		// All checkboxes inputs        
+		$valid = array();
+	 
+		//post title
+		$valid['post-title'] = (isset($input['post-title']) && !empty($input['post-title'])) ? 1 : 0;
+		//return 1;
+		return $valid;
+	 }
+
+	 public function options_update() {
+		register_setting($this->plugin_name, $this->plugin_name, array($this, 'validate'));
+	}
 }
